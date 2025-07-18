@@ -61,8 +61,6 @@ fix(L[:PL], 1)
 solve!(L, cumulative_iteration_limit=0)
 set_silent(L)
 
-print(production(N[:X]))
-
 # Create a third model. This one has the same inputs and outputs as the first
 # model, but uses the solutions of the first model as starting values. This should
 # be fully balanced. 
