@@ -56,10 +56,17 @@ function simple_model(inputs, outputs; start_values::Dict{Symbol,Real}=Dict{Symb
     return M
 end
 
+
+"""
+    new_quantity(M::MPSGEModel,X::Symbol,P::Symbol,n::Symbol)
+
+Return the updated quantity for a given sector/consumer `X`, commodity `P`, and nest `n`.
+"""
 function new_quantity(M::MPSGEModel,X::Symbol,P::Symbol,n::Symbol)
     sign = n == :s ? 1 : -1
     return sign*new_quantity(M[X], M[P], n)
 end
+
 
 function new_quantity(X::Sector, P::Commodity, n::Symbol)
     return value(compensated_demand(X, P, n)*X*P)
