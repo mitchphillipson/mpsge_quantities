@@ -36,8 +36,12 @@ outputs = NamedArray(
 # Initialize the first model and solve it.
 M = simple_model(inputs, outputs)
 fix(M[:PL], 1)
+
+# Uncomment this line to verify that model is unbalanced. You will see a non-zero residual in the output.
+# solve!(M, cumulative_iteration_limit=0)
+
 solve!(M)
-set_silent(M)
+set_silent(M) # Setting the model to silent suppresses output. Feel free to comment it out and see what happens.
 
 # Create new inputs and outputs based the initial model's solution
 new_inputs = NamedArray(
