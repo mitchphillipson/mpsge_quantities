@@ -1,3 +1,8 @@
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+
+
 using MPSGE
 using JuMP
 using NamedArrays
