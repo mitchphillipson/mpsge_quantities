@@ -61,6 +61,8 @@ fix(L[:PL], 1)
 solve!(L, cumulative_iteration_limit=0)
 set_silent(L)
 
+print(production(N[:X]))
+
 # Create a third model. This one has the same inputs and outputs as the first
 # model, but uses the solutions of the first model as starting values. This should
 # be fully balanced. 
@@ -106,17 +108,28 @@ post_tax = outerjoin(
 
 
 
-
-leftjoin(
-    stack(pre_tax, variable_name = :model, value_name = :pre_tax),
-    stack(post_tax, variable_name = :model, value_name = :post_tax),
-    on = [:var, :model]
-) |>
-x -> transform(x,
-    [:pre_tax, :post_tax] => ByRow((pre,post) -> post/pre) => :ratio
-) |>
-x -> select(x, :var, :model, :ratio) |>
-x -> unstack(x, :model, :ratio)
+# This is a little more complex of a dataframe operation, so I'll discuss it here.
+# I want to join the two dataframes, but I first convert them from wide to long 
+# format with `stack`. You can highlight a line and run it to see the output. 
+# (literally highlight the line and press Shift+Enter). 
+#
+# Then I take the output of the join and pipe it into a `transform` operation. 
+# The `|>` is the pipe operator, the `x -> ` just says take the output of the previous
+# operation and call it `x`. The transform takes the two columns of pre-tax and post-tax
+# and divides them, exactly as laid out in the blog post.
+#
+# Finally, I select the columns I want to keep and unstack the data so that it's
+# easier to read. 
+comparison = leftjoin(
+        stack(pre_tax, variable_name = :model, value_name = :pre_tax),
+        stack(post_tax, variable_name = :model, value_name = :post_tax),
+        on = [:var, :model]
+    ) |>
+    x -> transform(x,
+        [:pre_tax, :post_tax] => ByRow((pre,post) -> post/pre) => :ratio
+    ) |>
+    x -> select(x, :var, :model, :ratio) |>
+    x -> unstack(x, :model, :ratio)
 
 
 
